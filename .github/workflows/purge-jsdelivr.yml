@@ -1,0 +1,26 @@
+name: Purge jsDelivr cache
+
+# Every family site loads hurd-footer.js straight from jsDelivr's @main
+# CDN URL rather than bundling/vendoring it -- that's what makes this repo
+# the single source of truth: no consuming site (ryans-portfolio,
+# alycias-portfolio, bbsystems-us, ramonas-portfolio, archive-hurd-cc,
+# blog-hurd-cc) ever needs a rebuild when this file changes, since the
+# script is fetched fresh by each visitor's browser, not compiled in at
+# their build time. The only thing standing between a push here and every
+# site actually showing the change is jsDelivr's own edge cache (up to
+# ~12h) -- this purges it immediately on every push to main so a footer
+# change is live everywhere within moments, not hours. No secrets needed;
+# jsDelivr's purge endpoint is public.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hurd-footer.js"
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge hurd-footer.js from jsDelivr
+        run: curl -fsS "https://purge.jsdelivr.net/gh/rh7112/hurd-footer@main/hurd-footer.js"

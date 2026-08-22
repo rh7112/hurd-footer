@@ -56,7 +56,11 @@ server-rendered content.
 
 ## Updating
 
-Edit `hurd-footer.js`, commit, push. Sites pinned to `@main` on jsDelivr
-pick up the change within jsDelivr's cache TTL (~12 hours) — for an
-instant update, pin a specific commit hash (`@<sha>`) or purge the
-jsDelivr cache for the file after pushing.
+Edit `hurd-footer.js`, commit, push to `main` — that's it. Every
+consuming site loads this file straight from jsDelivr's CDN at page-load
+time rather than bundling it in at their own build time, so nothing
+downstream ever needs a rebuild: the change is live for every site the
+moment jsDelivr's edge cache picks it up. A GitHub Action
+(`.github/workflows/purge-jsdelivr.yml`) purges that cache automatically
+on every push to `main`, so in practice the change is live within
+moments, not jsDelivr's ~12h default TTL.
