@@ -12,7 +12,13 @@
 // Attributes (all optional):
 //   tagline    -- text on the left. Defaults to "Hurd Archives".
 //   link-href  -- URL on the right. Defaults to https://ryan.hurd.cc.
-//   link-label -- text for the link. Defaults to "Made by Ryan Hurd".
+//   link-label -- text for the link. Defaults to "Made by Ryan Hurd" when
+//                 link-href points at ryan.hurd.cc (that's attribution,
+//                 not a self-explanatory URL) -- otherwise defaults to
+//                 link-href with the scheme stripped (e.g. a GitHub link
+//                 already says where it goes, "Made by Ryan Hurd" would
+//                 just be redundant next to a tagline that already says
+//                 who the site belongs to).
 //
 // Theming: the shadow-DOM styles read --color-border/--color-text-muted/
 // --color-accent custom properties from the host page if defined
@@ -33,11 +39,21 @@ function escapeHtml(value) {
   })[ch])
 }
 
+function defaultLinkLabel(linkHref) {
+  let hostname
+  try {
+    hostname = new URL(linkHref, 'https://ryan.hurd.cc').hostname
+  } catch {
+    hostname = ''
+  }
+  return hostname === 'ryan.hurd.cc' ? 'Made by Ryan Hurd' : linkHref.replace(/^https?:\/\//, '')
+}
+
 class HurdFooter extends HTMLElement {
   connectedCallback() {
     const tagline = this.getAttribute('tagline') || 'Hurd Archives'
     const linkHref = this.getAttribute('link-href') || 'https://ryan.hurd.cc'
-    const linkLabel = this.getAttribute('link-label') || 'Made by Ryan Hurd'
+    const linkLabel = this.getAttribute('link-label') || defaultLinkLabel(linkHref)
 
     const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' })
     shadow.innerHTML = `

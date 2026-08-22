@@ -24,7 +24,7 @@ file locally), then use the element anywhere in your page/layout:
 |---|---|---|
 | `tagline` | `Hurd Archives` | Text on the left |
 | `link-href` | `https://ryan.hurd.cc` | URL on the right |
-| `link-label` | `Made by Ryan Hurd` | Text for the link |
+| `link-label` | `Made by Ryan Hurd` if `link-href` points at ryan.hurd.cc, otherwise `link-href` with the scheme stripped | Text for the link |
 
 ### Per-framework notes
 
