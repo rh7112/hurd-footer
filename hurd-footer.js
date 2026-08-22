@@ -12,8 +12,7 @@
 // Attributes (all optional):
 //   tagline    -- text on the left. Defaults to "Hurd Archives".
 //   link-href  -- URL on the right. Defaults to https://ryan.hurd.cc.
-//   link-label -- text for the link. Defaults to link-href with the
-//                 scheme stripped (e.g. "ryan.hurd.cc").
+//   link-label -- text for the link. Defaults to "Made by Ryan Hurd".
 //
 // Theming: the shadow-DOM styles read --color-border/--color-text-muted/
 // --color-accent custom properties from the host page if defined
@@ -38,7 +37,7 @@ class HurdFooter extends HTMLElement {
   connectedCallback() {
     const tagline = this.getAttribute('tagline') || 'Hurd Archives'
     const linkHref = this.getAttribute('link-href') || 'https://ryan.hurd.cc'
-    const linkLabel = this.getAttribute('link-label') || linkHref.replace(/^https?:\/\//, '')
+    const linkLabel = this.getAttribute('link-label') || 'Made by Ryan Hurd'
 
     const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' })
     shadow.innerHTML = `
