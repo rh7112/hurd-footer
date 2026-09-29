@@ -1,8 +1,9 @@
 # hurd-footer
 
-A shared footer for the hurd.cc family of sites, as a single dependency-free
-Web Component (`<hurd-footer>`) — one implementation instead of one per
-framework, since these sites span Next.js, SvelteKit, and Nuxt.
+A shared footer for the Hurd Craft Co. family of sites, as a single
+dependency-free Web Component (`<hurd-footer>`) — one implementation
+instead of one per framework, since these sites span Next.js, SvelteKit,
+and Nuxt.
 
 ## Usage
 
@@ -14,17 +15,25 @@ file locally), then use the element anywhere in your page/layout:
 
 <hurd-footer
   tagline="Ryan Hurd — Software Engineer"
-  link-href="https://ryan.hurd.cc"
+  link-href="https://hurd.cc"
 ></hurd-footer>
 ```
+
+The footer also renders a `© <current year>` ahead of the tagline automatically
+-- not an attribute, just computed at render time.
+
+If `link-href`'s hostname matches the page's own hostname (e.g. hurd.cc's own
+usage linking to hurd.cc), the credit link is omitted entirely rather than
+rendered as a dead self-link -- automatic, based on where the page actually
+is, not specific to any one domain.
 
 ### Attributes (all optional)
 
 | Attribute | Default | Description |
 |---|---|---|
-| `tagline` | `Hurd Archives` | Text on the left |
-| `link-href` | `https://ryan.hurd.cc` | URL on the right |
-| `link-label` | `Made by Ryan Hurd` if `link-href` points at ryan.hurd.cc, otherwise `link-href` with the scheme stripped | Text for the link |
+| `tagline` | `Hurd Archives` | Text on the left (after the auto `©` + year) |
+| `link-href` | `https://hurd.cc` | URL on the right |
+| `link-label` | `Made by Hurd Craft Co.` if `link-href` points at hurd.cc, otherwise `link-href` with the scheme stripped | Text for the link |
 
 ### Per-framework notes
 
