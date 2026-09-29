@@ -20,6 +20,13 @@
 //                 would just be redundant next to a tagline that already
 //                 says who the site belongs to).
 //
+// Self-link suppression: if link-href's hostname matches the current
+// page's hostname (e.g. hurd.cc's own usage linking to hurd.cc), the
+// link would just reload the page you're already on -- so it renders as
+// plain, non-interactive text instead of a link. Not hurd.cc-specific:
+// it's a general "don't link to yourself" rule based on where the page
+// actually is, so it keeps working correctly if that ever changes.
+//
 // Theming: the shadow-DOM styles read --color-border/--color-text-muted/
 // --color-accent custom properties from the host page if defined
 // (custom properties pierce shadow DOM boundaries), falling back to this
@@ -49,12 +56,27 @@ function defaultLinkLabel(linkHref) {
   return hostname === 'hurd.cc' ? 'Made by Hurd Craft Co.' : linkHref.replace(/^https?:\/\//, '')
 }
 
+function isSelfLink(linkHref) {
+  try {
+    return new URL(linkHref, window.location.href).hostname === window.location.hostname
+  } catch {
+    return false
+  }
+}
+
 class HurdFooter extends HTMLElement {
   connectedCallback() {
     const tagline = this.getAttribute('tagline') || 'Hurd Archives'
     const linkHref = this.getAttribute('link-href') || 'https://hurd.cc'
     const linkLabel = this.getAttribute('link-label') || defaultLinkLabel(linkHref)
     const year = new Date().getFullYear()
+    // Self-link: omit the credit entirely rather than showing it as
+    // plain text -- on hurd.cc's own usage, the default label ("Made by
+    // Hurd Craft Co.") would just repeat what the tagline ("Hurd Craft
+    // Co. LLC") already says, so there's nothing useful left to show.
+    const credit = isSelfLink(linkHref)
+      ? ''
+      : `<a class="credit" href="${escapeHtml(linkHref)}" target="_blank" rel="noopener">${escapeHtml(linkLabel)}</a>`
 
     const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' })
     shadow.innerHTML = `
@@ -83,20 +105,20 @@ class HurdFooter extends HTMLElement {
           font-variant-numeric: tabular-nums;
           opacity: 0.75;
         }
-        a {
+        .credit {
           color: var(--color-text-muted, #7a7168);
           text-decoration: none;
           font-weight: 600;
           transition: color 0.15s ease;
         }
-        a:hover,
-        a:focus-visible {
+        a.credit:hover,
+        a.credit:focus-visible {
           color: var(--color-accent, #8a5a3b);
         }
       </style>
       <footer>
         <span class="tagline"><span class="year">&copy; ${year}</span><span>${escapeHtml(tagline)}</span></span>
-        <a href="${escapeHtml(linkHref)}" target="_blank" rel="noopener">${escapeHtml(linkLabel)}</a>
+        ${credit}
       </footer>
     `
   }

@@ -22,6 +22,11 @@ file locally), then use the element anywhere in your page/layout:
 The footer also renders a `© <current year>` ahead of the tagline automatically
 -- not an attribute, just computed at render time.
 
+If `link-href`'s hostname matches the page's own hostname (e.g. hurd.cc's own
+usage linking to hurd.cc), the credit link is omitted entirely rather than
+rendered as a dead self-link -- automatic, based on where the page actually
+is, not specific to any one domain.
+
 ### Attributes (all optional)
 
 | Attribute | Default | Description |
