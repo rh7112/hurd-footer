@@ -1,24 +1,24 @@
-// <hurd-footer> -- a shared site footer for the hurd.cc family of sites
-// (Next.js, SvelteKit, Nuxt -- see the README), built as a native Web
-// Component specifically so there's exactly one implementation to
+// <hurd-footer> -- a shared site footer for the Hurd Craft Co. family of
+// sites (Next.js, SvelteKit, Nuxt -- see the README), built as a native
+// Web Component specifically so there's exactly one implementation to
 // maintain instead of one per framework. No build step, no
 // dependencies: this file is consumed directly, either via a CDN URL
 // (jsDelivr serving straight from this repo) or copied locally.
 //
 // Usage: load this file as a module, then use the element anywhere:
 //   <script type="module" src=".../hurd-footer.js"></script>
-//   <hurd-footer tagline="Ryan Hurd — Software Engineer" link-href="https://ryan.hurd.cc"></hurd-footer>
+//   <hurd-footer tagline="Ryan Hurd — Software Engineer" link-href="https://hurd.cc"></hurd-footer>
 //
 // Attributes (all optional):
 //   tagline    -- text on the left. Defaults to "Hurd Archives".
-//   link-href  -- URL on the right. Defaults to https://ryan.hurd.cc.
-//   link-label -- text for the link. Defaults to "Made by Ryan Hurd" when
-//                 link-href points at ryan.hurd.cc (that's attribution,
+//   link-href  -- URL on the right. Defaults to https://hurd.cc.
+//   link-label -- text for the link. Defaults to "Made by Hurd Craft Co."
+//                 when link-href points at hurd.cc (that's attribution,
 //                 not a self-explanatory URL) -- otherwise defaults to
 //                 link-href with the scheme stripped (e.g. a GitHub link
-//                 already says where it goes, "Made by Ryan Hurd" would
-//                 just be redundant next to a tagline that already says
-//                 who the site belongs to).
+//                 already says where it goes, "Made by Hurd Craft Co."
+//                 would just be redundant next to a tagline that already
+//                 says who the site belongs to).
 //
 // Theming: the shadow-DOM styles read --color-border/--color-text-muted/
 // --color-accent custom properties from the host page if defined
@@ -42,18 +42,19 @@ function escapeHtml(value) {
 function defaultLinkLabel(linkHref) {
   let hostname
   try {
-    hostname = new URL(linkHref, 'https://ryan.hurd.cc').hostname
+    hostname = new URL(linkHref, 'https://hurd.cc').hostname
   } catch {
     hostname = ''
   }
-  return hostname === 'ryan.hurd.cc' ? 'Made by Ryan Hurd' : linkHref.replace(/^https?:\/\//, '')
+  return hostname === 'hurd.cc' ? 'Made by Hurd Craft Co.' : linkHref.replace(/^https?:\/\//, '')
 }
 
 class HurdFooter extends HTMLElement {
   connectedCallback() {
     const tagline = this.getAttribute('tagline') || 'Hurd Archives'
-    const linkHref = this.getAttribute('link-href') || 'https://ryan.hurd.cc'
+    const linkHref = this.getAttribute('link-href') || 'https://hurd.cc'
     const linkLabel = this.getAttribute('link-label') || defaultLinkLabel(linkHref)
+    const year = new Date().getFullYear()
 
     const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' })
     shadow.innerHTML = `
@@ -62,25 +63,39 @@ class HurdFooter extends HTMLElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          gap: 1rem;
+          flex-wrap: wrap;
+          gap: 0.5rem 1rem;
           max-width: 720px;
           margin: 2rem auto 0;
           padding: 1.25rem 1.5rem 2rem;
           border-top: 1px solid var(--color-border, #e4dcd0);
           font-family: system-ui, sans-serif;
           font-size: 0.82rem;
+          line-height: 1.4;
           color: var(--color-text-muted, #7a7168);
+        }
+        .tagline {
+          display: flex;
+          align-items: baseline;
+          gap: 0.4em;
+        }
+        .year {
+          font-variant-numeric: tabular-nums;
+          opacity: 0.75;
         }
         a {
           color: var(--color-text-muted, #7a7168);
           text-decoration: none;
+          font-weight: 600;
+          transition: color 0.15s ease;
         }
-        a:hover {
+        a:hover,
+        a:focus-visible {
           color: var(--color-accent, #8a5a3b);
         }
       </style>
       <footer>
-        <span>${escapeHtml(tagline)}</span>
+        <span class="tagline"><span class="year">&copy; ${year}</span><span>${escapeHtml(tagline)}</span></span>
         <a href="${escapeHtml(linkHref)}" target="_blank" rel="noopener">${escapeHtml(linkLabel)}</a>
       </footer>
     `
