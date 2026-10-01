@@ -22,6 +22,10 @@ file locally), then use the element anywhere in your page/layout:
 The footer also renders a `© <current year>` ahead of the tagline automatically
 -- not an attribute, just computed at render time.
 
+The right-hand link renders as the Hurd Craft Co. logo mark (orange "Hurd" +
+blue "Craft"/"Co." stacked), not plain text -- fixed brand colors, not themed
+per site.
+
 If `link-href`'s hostname matches the page's own hostname (e.g. hurd.cc's own
 usage linking to hurd.cc), the credit link is omitted entirely rather than
 rendered as a dead self-link -- automatic, based on where the page actually
@@ -33,7 +37,7 @@ is, not specific to any one domain.
 |---|---|---|
 | `tagline` | `Hurd Archives` | Text on the left (after the auto `©` + year) |
 | `link-href` | `https://hurd.cc` | URL on the right |
-| `link-label` | `Made by Hurd Craft Co.` if `link-href` points at hurd.cc, otherwise `link-href` with the scheme stripped | Text for the link |
+| `link-label` | `Made by Hurd Craft Co.` if `link-href` points at hurd.cc, otherwise `link-href` with the scheme stripped | Not shown visually -- the link's accessible name (`aria-label`/`title`) for screen readers and tooltips, since the logo mark carries no text node |
 
 ### Per-framework notes
 
@@ -50,11 +54,17 @@ is, not specific to any one domain.
 
 ### Theming
 
-The component reads `--color-border`, `--color-text-muted`, and
-`--color-accent` from the host page if defined (custom properties pierce
-shadow DOM), and falls back to its own defaults otherwise — so it looks
-right immediately, and matches a site's own palette once that site
-defines those tokens.
+The tagline/copyright text reads `--color-border` and `--color-text-muted`
+from the host page if defined (custom properties pierce shadow DOM), and
+falls back to its own defaults otherwise — so it looks right immediately,
+and matches a site's own palette once that site defines those tokens.
+
+The logo mark does *not* theme per site — it always renders in fixed Hurd
+Craft Co. brand colors (orange/blue, with a dark-mode-aware variant via
+`prefers-color-scheme`), since it's meant to be a consistent company mark
+rather than blend into each site's own palette. `--color-accent` is no
+longer read by this component; if your site only defined that token for
+the footer's benefit, it's now unused and safe to remove.
 
 ### SSR note
 
