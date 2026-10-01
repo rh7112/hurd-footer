@@ -11,15 +11,20 @@
 //
 // Attributes (all optional):
 //   tagline    -- text on the left. Defaults to "Hurd Archives".
-//   link-href  -- URL on the right, rendered as the Hurd Craft Co. logo
-//                 mark (not plain text). Defaults to https://hurd.cc.
-//   link-label -- not shown visually -- used as the link's accessible
-//                 name (aria-label/title) for screen readers and
-//                 tooltips, since the logo itself carries no text node.
-//                 Defaults to "Made by Hurd Craft Co." when link-href
-//                 points at hurd.cc (that's attribution, not a self-
-//                 explanatory URL) -- otherwise defaults to link-href
-//                 with the scheme stripped.
+//   link-href  -- URL on the right. When it points at hurd.cc (the
+//                 default), renders as "Made by " + the Hurd Craft Co.
+//                 logo mark; any other host renders as plain text
+//                 instead, since the logo shouldn't be attributed to
+//                 somewhere else. Defaults to https://hurd.cc.
+//   link-label -- not shown visually in the hurd.cc/logo case -- used as
+//                 the link's accessible name (aria-label/title) for
+//                 screen readers and tooltips instead, since the
+//                 rendered content there ("Made by " + an SVG) doesn't
+//                 read cleanly as one phrase on its own. Shown directly
+//                 as the visible text in the plain-text (non-hurd.cc)
+//                 case. Defaults to "Made by Hurd Craft Co." when
+//                 link-href points at hurd.cc, otherwise link-href with
+//                 the scheme stripped.
 //
 // Self-link suppression: if link-href's hostname matches the current
 // page's hostname (e.g. hurd.cc's own usage linking to hurd.cc), the
@@ -67,14 +72,16 @@ function escapeHtml(value) {
   })[ch])
 }
 
-function defaultLinkLabel(linkHref) {
-  let hostname
+function isHurdCcHref(linkHref) {
   try {
-    hostname = new URL(linkHref, 'https://hurd.cc').hostname
+    return new URL(linkHref, 'https://hurd.cc').hostname === 'hurd.cc'
   } catch {
-    hostname = ''
+    return false
   }
-  return hostname === 'hurd.cc' ? 'Made by Hurd Craft Co.' : linkHref.replace(/^https?:\/\//, '')
+}
+
+function defaultLinkLabel(linkHref) {
+  return isHurdCcHref(linkHref) ? 'Made by Hurd Craft Co.' : linkHref.replace(/^https?:\/\//, '')
 }
 
 function isSelfLink(linkHref) {
@@ -91,13 +98,20 @@ class HurdFooter extends HTMLElement {
     const linkHref = this.getAttribute('link-href') || 'https://hurd.cc'
     const linkLabel = this.getAttribute('link-label') || defaultLinkLabel(linkHref)
     const year = new Date().getFullYear()
+    // "Made by " + the logo mark only when link-href actually points at
+    // hurd.cc -- the logo represents Hurd Craft Co. specifically, so a
+    // link crediting somewhere else (a rare case today, but supported)
+    // falls back to plain text instead of misattributing the mark.
+    const creditInner = isHurdCcHref(linkHref)
+      ? `Made by ${logoSvg}`
+      : escapeHtml(linkLabel)
     // Self-link: omit the credit entirely rather than showing it as
     // plain text -- on hurd.cc's own usage, the default label ("Made by
     // Hurd Craft Co.") would just repeat what the tagline ("Hurd Craft
     // Co. LLC") already says, so there's nothing useful left to show.
     const credit = isSelfLink(linkHref)
       ? ''
-      : `<a class="credit" href="${escapeHtml(linkHref)}" target="_blank" rel="noopener" aria-label="${escapeHtml(linkLabel)}" title="${escapeHtml(linkLabel)}">${logoSvg}</a>`
+      : `<a class="credit" href="${escapeHtml(linkHref)}" target="_blank" rel="noopener" aria-label="${escapeHtml(linkLabel)}" title="${escapeHtml(linkLabel)}">${creditInner}</a>`
 
     const shadow = this.shadowRoot || this.attachShadow({ mode: 'open' })
     shadow.innerHTML = `
@@ -129,8 +143,9 @@ class HurdFooter extends HTMLElement {
         .credit {
           display: inline-flex;
           align-items: center;
+          gap: 0.4em;
+          color: var(--color-text-muted, #7a7168);
           text-decoration: none;
-          line-height: 0;
           opacity: 0.9;
           transition: opacity 0.15s ease;
         }
