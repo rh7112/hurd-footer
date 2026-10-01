@@ -22,9 +22,11 @@ file locally), then use the element anywhere in your page/layout:
 The footer also renders a `© <current year>` ahead of the tagline automatically
 -- not an attribute, just computed at render time.
 
-The right-hand link renders as the Hurd Craft Co. logo mark (orange "Hurd" +
-blue "Craft"/"Co." stacked), not plain text -- fixed brand colors, not themed
-per site.
+When `link-href` points at hurd.cc (the default), the right-hand link renders
+as "Made by " followed by the Hurd Craft Co. logo mark (orange "Hurd" + blue
+"Craft"/"Co." stacked) -- fixed brand colors, not themed per site. Any other
+`link-href` renders as plain text instead, since the logo shouldn't be
+attributed to somewhere else.
 
 If `link-href`'s hostname matches the page's own hostname (e.g. hurd.cc's own
 usage linking to hurd.cc), the credit link is omitted entirely rather than
@@ -37,7 +39,7 @@ is, not specific to any one domain.
 |---|---|---|
 | `tagline` | `Hurd Archives` | Text on the left (after the auto `©` + year) |
 | `link-href` | `https://hurd.cc` | URL on the right |
-| `link-label` | `Made by Hurd Craft Co.` if `link-href` points at hurd.cc, otherwise `link-href` with the scheme stripped | Not shown visually -- the link's accessible name (`aria-label`/`title`) for screen readers and tooltips, since the logo mark carries no text node |
+| `link-label` | `Made by Hurd Craft Co.` if `link-href` points at hurd.cc, otherwise `link-href` with the scheme stripped | The link's accessible name (`aria-label`/`title`) for screen readers and tooltips in the hurd.cc/logo case; shown directly as the visible text otherwise |
 
 ### Per-framework notes
 
