@@ -84,9 +84,16 @@ function defaultLinkLabel(linkHref) {
   return isHurdCcHref(linkHref) ? 'Made by Hurd Craft Co.' : linkHref.replace(/^https?:\/\//, '')
 }
 
+// "www.hurd.cc" and "hurd.cc" are the same site, so compare hostnames with a
+// leading "www." removed -- otherwise the credit hid on hurd.cc but showed on
+// www.hurd.cc, making the footer look different between the two.
+function stripWww(hostname) {
+  return hostname.replace(/^www\./i, '')
+}
+
 function isSelfLink(linkHref) {
   try {
-    return new URL(linkHref, window.location.href).hostname === window.location.hostname
+    return stripWww(new URL(linkHref, window.location.href).hostname) === stripWww(window.location.hostname)
   } catch {
     return false
   }
